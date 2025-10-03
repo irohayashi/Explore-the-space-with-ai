@@ -3,7 +3,6 @@
 import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useSession } from "@/lib/auth-client"
 import {
   IconCamera,
   IconChartBar,
@@ -148,15 +147,10 @@ const staticData = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession()
-  
-  const userData = session?.user ? {
-    name: session.user.name || "User",
-    email: session.user.email,
-    avatar: session.user.image || "/codeguide-logo.png",
-  } : {
-    name: "Guest",
-    email: "guest@example.com", 
+  // For the AI article generator app, we'll use static user data
+  const userData = {
+    name: "User",
+    email: "user@example.com", 
     avatar: "/codeguide-logo.png",
   }
 

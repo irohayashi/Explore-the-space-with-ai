@@ -53,8 +53,24 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useIsMobile } from "@/hooks/use-mobile"
 import { Badge } from "@/components/ui/badge"
+
+// Custom hook to detect mobile devices
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+
+  React.useEffect(() => {
+    const mql = window.matchMedia("(max-width: 768px)")
+    const onChange = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < 768)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return !!isMobile
+}
 import { Button } from "@/components/ui/button"
 import {
   ChartConfig,

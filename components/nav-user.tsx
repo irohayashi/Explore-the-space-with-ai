@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { signOut } from "@/lib/auth-client"
 import {
   IconCreditCard,
   IconDotsVertical,
@@ -47,8 +46,8 @@ export function NavUser({
 
   const handleSignOut = async () => {
     setIsSigningOut(true)
+    // For the AI article generator, we'll just redirect to home
     try {
-      await signOut()
       router.push("/")
     } catch (error) {
       console.error("Sign out error:", error)

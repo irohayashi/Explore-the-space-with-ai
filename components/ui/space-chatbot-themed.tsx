@@ -39,16 +39,39 @@ const SpaceChatbotThemed = () => {
   // Add scroll detection to hide chatbot when scrolling down
   useEffect(() => {
     let lastScrollY = window.scrollY;
+    let ticking = false;
+    let initialViewportHeight = window.innerHeight;
 
-    const handleScroll = () => {
+    // Throttle scroll events for better performance
+    const updateScroll = () => {
       const currentScrollY = window.scrollY;
       
+      // Check if we're on a mobile device to handle virtual keyboard differently
+      const isMobile = window.innerWidth <= 768;
+      
+      // Check if mobile keyboard might be open (viewport height significantly reduced)
+      const currentViewportHeight = window.innerHeight;
+      const keyboardThreshold = 150; // pixels that typically indicate keyboard is open
+      const isKeyboardOpen = (initialViewportHeight - currentViewportHeight > keyboardThreshold);
+      
+      // If we're on mobile and the keyboard is open, don't update scroll state
+      if (isMobile && isKeyboardOpen) {
+        lastScrollY = currentScrollY;
+        ticking = false;
+        return;
+      }
+      
       // If scrolling down and scrolled more than 100px, hide the chatbot
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setScrolled(true);
-        // Only close if chat is open
-        if (isOpen) {
-          setIsOpen(false);
+      // On mobile (when keyboard is not open), be more conservative
+      if (currentScrollY > lastScrollY && currentScrollY > (isMobile && !isKeyboardOpen ? 200 : 100)) {
+        // Only hide if there's a significant scroll (not just virtual keyboard)
+        const scrollThreshold = isMobile && !isKeyboardOpen ? 50 : 10; // Minimum scroll distance to trigger hiding
+        if (currentScrollY - lastScrollY > scrollThreshold) {
+          setScrolled(true);
+          // Only close if chat is open
+          if (isOpen) {
+            setIsOpen(false);
+          }
         }
       } else if (currentScrollY < lastScrollY) {
         // Show chatbot when scrolling up
@@ -56,11 +79,31 @@ const SpaceChatbotThemed = () => {
       }
       
       lastScrollY = currentScrollY;
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScroll);
+        ticking = true;
+      }
+    };
+
+    // Also handle resize events to detect mobile keyboard appearance
+    const handleResize = () => {
+      // Debounce resize events
+      setTimeout(() => {
+        // Update the scroll state based on the new viewport height
+        requestAnimationFrame(updateScroll);
+      }, 100);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, [isOpen]);
 
@@ -186,6 +229,8 @@ const SpaceChatbotThemed = () => {
           transition-all duration-300 ease-out
           ${palette.border}
         `}
+        // Add a data attribute to identify when the chat is open for scroll detection
+        data-chat-open={isOpen}
       >
         {/* Header */}
         <div className={`

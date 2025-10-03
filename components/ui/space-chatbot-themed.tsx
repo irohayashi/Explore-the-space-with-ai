@@ -40,7 +40,7 @@ const SpaceChatbotThemed = () => {
   useEffect(() => {
     let lastScrollY = window.scrollY;
     let ticking = false;
-    let initialViewportHeight = window.innerHeight;
+    const initialViewportHeight = window.innerHeight;
 
     // Throttle scroll events for better performance
     const updateScroll = () => {

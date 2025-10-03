@@ -28,7 +28,7 @@ What's up! This is my personal project where I've built a sick space article gen
 - 🖼️ Space image gallery with NASA data
 - 🔍 Search functionality for space topics
 - 📝 Article detail pages with rich content
-- 🎯 Space-only imagery (galaxies, nebulae, planets - no astronauts/rockets)
+- 🎯 Space-only imagery (galaxies, nebulae...)
 
 ## Prerequisites
 
